@@ -1,0 +1,6 @@
+*.xlsx
+*.csv
+!rfm.csv
+!rfm_clustered.csv
+__pycache__/
+.ipynb_checkpoints/
