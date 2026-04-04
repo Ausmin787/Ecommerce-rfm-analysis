@@ -10,13 +10,25 @@ Segment customers of a UK-based online retailer using RFM (Recency, Frequency, M
 - Key columns: CustomerID, InvoiceDate, Quantity, Price, Invoice, Country
 
 ## Status
-- [ ] Exploration
-- [ ] Cleaning
-- [ ] RFM Feature Engineering
-- [ ] K-Means Clustering
-- [ ] Visualizations
-- [ ] README
-- [ ] GitHub Push
+- [x] Exploration
+- [x] Cleaning
+- [x] RFM Feature Engineering
+- [x] K-Means Clustering
+- [x] Visualizations
+- [x] README
+- [x] GitHub Push
+
+Project Status: COMPLETE (April 4, 2026)
+
+## Key Results
+- 5,350 UK customers segmented into 4 clusters
+- Champions (18.8%) generate 71% of total revenue
+- Lapsing segment (£2.71M) = highest-priority winback target
+- Lost = 35.4% of customer base — do not invest here
+- Log-transform was critical: Monetary skewness was 28.97
+- K=4 selected via elbow method + silhouette score (0.37)
+
+GitHub: https://github.com/Ausmin787/Ecommerce-rfm-analysis
 
 ## Key Decisions
 - Use K-Means clustering (not hierarchical) for scalability
