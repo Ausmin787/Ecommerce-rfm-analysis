@@ -1,5 +1,12 @@
 # E-commerce Customer Segmentation — RFM & K-Means Clustering
 
+## Live Dashboard
+
+> **Interactive Dashboard:** https://dashboard-peach-three-87.vercel.app/
+> Built with Next.js + Recharts + shadcn/ui. Wired to real customer-level data.
+
+---
+
 ## Business Context
 
 Not all customers are equal — a small group typically drives the majority of revenue, while a large silent majority slowly churns. This project segments customers of a UK-based online retailer to identify who the high-value buyers are, who is slipping away, and who has already left. The goal is to turn raw transaction data into actionable priorities for retention, winback, and nurturing campaigns.
@@ -41,6 +48,15 @@ The elbow method was run for k = 2 to 10. K=4 sits at the inflection point in th
 ## Key Findings
 
 ![Segment Distribution](visuals/finding1_segment_distribution.png)
+
+| Segment | Customers | Share | Avg Spend | Revenue Share |
+|---|---|---|---|---|
+| Champions | 1,008 | 18.8% | £10,364 | 71.0% |
+| Lapsing | 1,328 | 24.8% | £2,041 | 18.4% |
+| At-Risk | 1,120 | 20.9% | £835 | 6.4% |
+| Lost | 1,894 | 35.4% | £333 | 4.3% |
+
+> **Note:** Avg Spend = total lifetime spend per customer (sum of all transactions), not average order value.
 
 - **Champions (18.8% of customers) generate 71% of total revenue** — a textbook Pareto effect. Losing even a small fraction of this group would be catastrophic to the bottom line.
 
@@ -93,6 +109,10 @@ Ecommerce-rfm-analysis/
 │   ├── finding2_rfm_scatter.png
 │   ├── finding3_cluster_heatmap.png
 │   └── finding4_revenue_concentration.png
+├── Dashboard/                    # Next.js interactive dashboard (deployed on Vercel)
+│   ├── components/rfm-dashboard.tsx
+│   ├── public/rfm_clustered.csv
+│   └── ...
 ├── CLAUDE.md
 └── README.md
 ```
