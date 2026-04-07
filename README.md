@@ -1,3 +1,5 @@
+![CI](https://github.com/Ausmin787/Ecommerce-rfm-analysis/actions/workflows/ci.yml/badge.svg)
+
 # E-commerce Customer Segmentation — RFM & K-Means Clustering
 
 ## Live Dashboard
