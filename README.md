@@ -1,120 +1,95 @@
 ![CI](https://github.com/Ausmin787/Ecommerce-rfm-analysis/actions/workflows/ci.yml/badge.svg)
 
-# E-commerce Customer Segmentation — RFM & K-Means Clustering
+# E-commerce RFM Customer Segmentation
+
+RFM (Recency, Frequency, Monetary) analysis and K-Means clustering applied to 725,000 UK e-commerce transactions to identify Champions, Lapsing, At-Risk, and Lost customer segments — with actionable revenue prioritization for retention and winback campaigns.
 
 ## Live Dashboard
 
-> **Interactive Dashboard:** https://dashboard-peach-three-87.vercel.app/
-> Built with Next.js + Recharts + shadcn/ui. Wired to real customer-level data.
+🔗 **Interactive Dashboard:** https://dashboard-peach-three-87.vercel.app/
 
----
-
-## Business Context
-
-Not all customers are equal — a small group typically drives the majority of revenue, while a large silent majority slowly churns. This project segments customers of a UK-based online retailer to identify who the high-value buyers are, who is slipping away, and who has already left. The goal is to turn raw transaction data into actionable priorities for retention, winback, and nurturing campaigns.
-
----
-
-## Dataset
-
-| Attribute | Detail |
-|---|---|
-| Source | Online Retail II — UCI Machine Learning Repository (via Kaggle) |
-| Size | ~1M transactions, reduced to 725,250 after cleaning |
-| Date Range | December 2009 – December 2011 |
-| Scope | UK customers only |
-
-**Why UK only?** The UK accounts for 91.9% of all transactions. Including other countries would introduce noise from very small, behaviorally different customer bases that would distort the clusters.
-
----
-
-## Methodology
-
-### RFM Feature Engineering
-Each customer is scored on three dimensions computed from their transaction history:
-
-- **Recency** — days since their last purchase (lower = more engaged)
-- **Frequency** — number of unique invoices placed
-- **Monetary** — total spend in GBP (sum of `Quantity × Price`)
-
-### Why Log-Transform?
-All three RFM features are heavily right-skewed — a small number of wholesale accounts spend tens of thousands while most customers spend hundreds. Raw K-Means would cluster around outliers rather than natural behavioral groups. `log1p` compression followed by `StandardScaler` normalization brings the distributions into a usable shape.
-
-### Why K = 4?
-The elbow method was run for k = 2 to 10. K=4 sits at the inflection point in the inertia curve and achieves the second-highest silhouette score (0.370), just behind k=2 which is too coarse to be actionable. Four clusters map cleanly onto four distinct business realities: Champions, Lapsing, At-Risk, and Lost.
-
-![Elbow Curve](visuals/elbow_curve.png)
-
----
+Built with Next.js + Recharts + shadcn/ui + papaparse, deployed on Vercel. Wired to real customer-level RFM data.
 
 ## Key Findings
 
-![Segment Distribution](visuals/finding1_segment_distribution.png)
+1. **Champions (18.8%):** 1,008 customers, avg spend £10,364 — generate 71% of total revenue
+2. **Lapsing (24.8%):** 1,328 customers, avg spend £2,041 — £2.71M recoverable revenue, highest-priority winback target
+3. **At-Risk (20.9%):** 1,120 customers, avg spend £835 — bought recently but low frequency, need nurturing
+4. **Lost (35.4%):** 1,894 customers, avg spend £333 — lowest retention priority, minimal reinvestment warranted
 
-| Segment | Customers | Share | Avg Spend | Revenue Share |
-|---|---|---|---|---|
-| Champions | 1,008 | 18.8% | £10,364 | 71.0% |
-| Lapsing | 1,328 | 24.8% | £2,041 | 18.4% |
-| At-Risk | 1,120 | 20.9% | £835 | 6.4% |
-| Lost | 1,894 | 35.4% | £333 | 4.3% |
+## Dataset
 
-> **Note:** Avg Spend = total lifetime spend per customer (sum of all transactions), not average order value.
+| Field | Detail |
+|-------|--------|
+| Source | UCI Machine Learning Repository — Online Retail II dataset |
+| Rows | ~1M raw transactions, 725,250 after cleaning |
+| Customers | 5,350 UK customers |
+| Date Range | December 2009 – December 2011 |
+| Scope | UK only (91.9% of all transactions) |
 
-- **Champions (18.8% of customers) generate 71% of total revenue** — a textbook Pareto effect. Losing even a small fraction of this group would be catastrophic to the bottom line.
+## Tech Stack
 
-- **35.4% of customers are Lost** — the largest single segment, with an average of 394 days since their last purchase. This is a silent retention crisis hiding in plain sight.
+- **Analysis:** Python (pandas, scikit-learn, matplotlib, seaborn, NumPy)
+- **Clustering:** K-Means (k=4, selected via elbow method + silhouette score 0.370)
+- **Dashboard:** Next.js + Recharts + shadcn/ui + papaparse
+- **Deployment:** Vercel (dashboard), GitHub Actions (CI)
 
-- **Lapsing customers (24.8%, £2.71M revenue) are the highest-priority winback target** — they have spending history and relationship depth, but their recency is slipping (avg 212 days). They are reachable before they become Lost.
-
-- **At-Risk customers are recent but thin** — they bought recently (avg 28 days) but with low frequency (3.1 invoices) and modest spend (£835). Without nurturing, they will lapse before becoming loyal.
-
-![RFM Scatter](visuals/finding2_rfm_scatter.png)
-![Heatmap](visuals/finding3_cluster_heatmap.png)
-![Revenue](visuals/finding4_revenue_concentration.png)
-
----
-
-## Business Recommendations
-
-| Segment | Action |
-|---|---|
-| **Champions** | Protect and reward — loyalty programs, early access, dedicated account management. Do not churn these customers. |
-| **Lapsing** | Launch a targeted winback campaign — personalized email with product recommendations based on past purchases. Time-sensitive offer. |
-| **At-Risk** | Nurture with low-friction engagement — welcome series, product education, small incentive on second purchase to build habit. |
-| **Lost** | Minimal spend — broad reactivation email only. Accept that most will not return; reallocate budget to Lapsing. |
-
----
-
-## Tools Used
-
-| Tool | Purpose |
-|---|---|
-| Python 3 | Core language |
-| pandas | Data loading, cleaning, and feature engineering |
-| scikit-learn | K-Means clustering, StandardScaler |
-| matplotlib | All visualizations |
-| NumPy | Log-transform and numerical operations |
-
----
-
-## Folder Structure
+## Project Structure
 
 ```
 Ecommerce-rfm-analysis/
-├── online_retail_II.csv          # Raw dataset
-├── online_retail_cleaned.csv     # After cleaning (725,250 rows)
+├── online_retail_II.csv          # Raw dataset (~1M transactions)
+├── online_retail_cleaned.csv     # Cleaned data (725,250 rows)
 ├── rfm.csv                       # RFM features per customer
-├── rfm_clustered.csv             # RFM + cluster labels
-├── visuals/
-│   ├── elbow_curve.png
-│   ├── finding1_segment_distribution.png
-│   ├── finding2_rfm_scatter.png
-│   ├── finding3_cluster_heatmap.png
-│   └── finding4_revenue_concentration.png
-├── Dashboard/                    # Next.js interactive dashboard (deployed on Vercel)
-│   ├── components/rfm-dashboard.tsx
-│   ├── public/rfm_clustered.csv
-│   └── ...
-├── CLAUDE.md
+├── rfm_clustered.csv             # RFM scores + cluster labels (model output)
+├── visuals/                      # All charts and visualizations (PNG)
+├── Dashboard/                    # Next.js interactive dashboard source
+│   ├── app/                      # Next.js App Router pages
+│   ├── components/               # UI components (shadcn/ui + rfm-dashboard)
+│   └── public/rfm_clustered.csv  # Data served to the dashboard
+├── CLAUDE.md                     # Project context for AI assistants
 └── README.md
 ```
+
+## Visualizations
+
+All charts are in `visuals/`:
+
+| File | Description |
+|------|-------------|
+| `elbow_curve.png` | Inertia vs k — shows inflection point at k=4 |
+| `finding1_segment_distribution.png` | Customer count per segment |
+| `finding2_rfm_scatter.png` | RFM scatter plot coloured by cluster |
+| `finding3_cluster_heatmap.png` | Normalized RFM feature means per cluster |
+| `finding4_revenue_concentration.png` | Revenue share by segment |
+| `silhouette_plot.png` | Silhouette scores per cluster |
+| `dbscan_kdistance.png` | K-distance plot for DBSCAN comparison |
+| `dbscan_vs_kmeans.png` | Side-by-side cluster comparison |
+| `cohort_retention.png` | Monthly cohort retention heatmap |
+
+## How to Run
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/Ausmin787/Ecommerce-rfm-analysis.git
+   cd Ecommerce-rfm-analysis
+   ```
+2. Install dependencies:
+   ```bash
+   pip install pandas scikit-learn matplotlib seaborn numpy openpyxl
+   ```
+3. Place the raw dataset (`online_retail_II.xlsx` or `.csv`) in the project root
+4. Run the analysis notebook/script — outputs saved to `visuals/` and `rfm_clustered.csv`
+
+To run the dashboard locally:
+```bash
+cd Dashboard
+npm install
+npm run dev
+```
+
+## Author
+
+Data Analyst Portfolio Project — targeting FMCG, e-commerce, and consulting roles.
+
+[GitHub: Ausmin787/Ecommerce-rfm-analysis](https://github.com/Ausmin787/Ecommerce-rfm-analysis)
