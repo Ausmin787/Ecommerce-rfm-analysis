@@ -53,19 +53,23 @@ Ecommerce-rfm-analysis/
 
 ## Visualizations
 
-All charts are in `visuals/`:
+![Customer Segment Distribution](visuals/finding1_segment_distribution.png)
 
-| File | Description |
-|------|-------------|
-| `elbow_curve.png` | Inertia vs k — shows inflection point at k=4 |
-| `finding1_segment_distribution.png` | Customer count per segment |
-| `finding2_rfm_scatter.png` | RFM scatter plot coloured by cluster |
-| `finding3_cluster_heatmap.png` | Normalized RFM feature means per cluster |
-| `finding4_revenue_concentration.png` | Revenue share by segment |
-| `silhouette_plot.png` | Silhouette scores per cluster |
-| `dbscan_kdistance.png` | K-distance plot for DBSCAN comparison |
-| `dbscan_vs_kmeans.png` | Side-by-side cluster comparison |
-| `cohort_retention.png` | Monthly cohort retention heatmap |
+![RFM Feature Scatter by Cluster](visuals/finding2_rfm_scatter.png)
+
+![Cluster Feature Heatmap](visuals/finding3_cluster_heatmap.png)
+
+![Revenue Concentration by Segment](visuals/finding4_revenue_concentration.png)
+
+![K-Means Elbow Curve](visuals/elbow_curve.png)
+
+![Silhouette Score Plot](visuals/silhouette_plot.png)
+
+![DBSCAN K-Distance Plot](visuals/dbscan_kdistance.png)
+
+![DBSCAN vs K-Means Comparison](visuals/dbscan_vs_kmeans.png)
+
+![Monthly Cohort Retention Heatmap](visuals/cohort_retention.png)
 
 ## How to Run
 
@@ -78,8 +82,7 @@ All charts are in `visuals/`:
    ```bash
    pip install pandas scikit-learn matplotlib seaborn numpy openpyxl
    ```
-3. Place the raw dataset (`online_retail_II.xlsx` or `.csv`) in the project root
-4. Run the analysis notebook/script — outputs saved to `visuals/` and `rfm_clustered.csv`
+3. Place the raw dataset (`online_retail_II.xlsx` or `.csv`) in the project root and run the analysis — charts saved to `visuals/` and model output to `rfm_clustered.csv`
 
 To run the dashboard locally:
 ```bash
