@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useIsMobile } from "@/hooks/use-mobile"
 import Papa from "papaparse"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
@@ -127,6 +128,7 @@ export function RFMDashboard() {
   const [segments, setSegments] = useState<SegmentStat[]>([])
   const [scatterData, setScatterData] = useState<Record<string, { x: number; y: number }[]>>({})
   const [loading, setLoading] = useState(true)
+  const isMobile = useIsMobile()
 
   useEffect(() => {
     fetch("/rfm_clustered.csv")
@@ -284,12 +286,12 @@ export function RFMDashboard() {
         {/* Charts Row 1 */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Segment Distribution Donut */}
-          <Card className="border-gray-800 bg-gray-900">
+          <Card className="border-gray-800 bg-gray-900 overflow-hidden">
             <CardHeader>
               <CardTitle className="text-white">Segment Distribution</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={pieChartConfig} className="mx-auto h-[300px]">
+              <ChartContainer config={pieChartConfig} className="mx-auto h-[300px] aspect-auto">
                 <PieChart>
                   <Pie
                     data={segments}
@@ -318,7 +320,8 @@ export function RFMDashboard() {
                   />
                   <Legend
                     verticalAlign="bottom"
-                    wrapperStyle={{ paddingTop: 10 }}
+                    iconSize={8}
+                    wrapperStyle={{ paddingTop: 10, fontSize: '11px' }}
                     formatter={(value) => {
                       const segment = segments.find((s) => s.name === value)
                       return `${value}: ${segment?.pct}%`
@@ -330,19 +333,19 @@ export function RFMDashboard() {
           </Card>
 
           {/* Revenue Concentration Bar */}
-          <Card className="border-gray-800 bg-gray-900">
+          <Card className="border-gray-800 bg-gray-900 overflow-hidden">
             <CardHeader>
               <CardTitle className="text-white">Revenue Concentration</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={barChartConfig} className="h-[300px]">
+              <ChartContainer config={barChartConfig} className="h-[300px] aspect-auto">
                 <BarChart
                   data={sortedByRevenue}
                   layout="vertical"
-                  margin={{ left: 80, right: 20 }}
+                  margin={isMobile ? { left: 0, right: 5 } : { left: 80, right: 20 }}
                 >
                   <XAxis type="number" domain={[0, 80]} tickFormatter={(v) => `${v}%`} stroke="#6b7280" />
-                  <YAxis type="category" dataKey="name" width={80} stroke="#6b7280" />
+                  <YAxis type="category" dataKey="name" width={isMobile ? 62 : 80} stroke="#6b7280" />
                   <ChartTooltip
                     content={
                       <ChartTooltipContent
@@ -364,15 +367,15 @@ export function RFMDashboard() {
         {/* Charts Row 2 */}
         <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* RFM Scatter Plot */}
-          <Card className="border-gray-800 bg-gray-900">
+          <Card className="border-gray-800 bg-gray-900 overflow-hidden">
             <CardHeader>
               <CardTitle className="text-white">
                 RFM Scatter: Recency vs Monetary
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={scatterChartConfig} className="h-[350px] w-full">
-                <ScatterChart margin={{ top: 20, right: 30, bottom: 50, left: 60 }}>
+              <ChartContainer config={scatterChartConfig} className="h-[350px] w-full aspect-auto">
+                <ScatterChart margin={{ top: 20, right: isMobile ? 10 : 30, bottom: 65, left: isMobile ? 35 : 60 }}>
                   <XAxis
                     type="number"
                     dataKey="x"
@@ -380,12 +383,12 @@ export function RFMDashboard() {
                     domain={[0, 700]}
                     reversed
                     stroke="#6b7280"
-                    tick={{ fontSize: 12 }}
-                    label={{
+                    tick={{ fontSize: 11, angle: -30, textAnchor: 'end', dy: 5 } as object}
+                    label={isMobile ? undefined : {
                       value: "Recency (days) — Lower is better →",
                       position: "insideBottom",
                       fill: "#9ca3af",
-                      offset: -5,
+                      offset: -15,
                       fontSize: 11,
                     }}
                   />
@@ -395,10 +398,10 @@ export function RFMDashboard() {
                     name="Monetary"
                     domain={[0, 8000]}
                     stroke="#6b7280"
-                    tick={{ fontSize: 12 }}
-                    width={55}
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
+                    width={isMobile ? 42 : 55}
                     tickFormatter={(v) => `£${v}`}
-                    label={{
+                    label={isMobile ? undefined : {
                       value: "Avg Spend (£)",
                       angle: -90,
                       position: "insideLeft",
@@ -424,11 +427,23 @@ export function RFMDashboard() {
                       name={segment.name}
                       data={scatterData[segment.name] || []}
                       fill={segment.color}
+                      shape={(props: { cx?: number; cy?: number; fill?: string }) => (
+                        <circle
+                          cx={props.cx}
+                          cy={props.cy}
+                          r={isMobile ? 3 : 5}
+                          fill={props.fill}
+                          fillOpacity={0.8}
+                        />
+                      )}
                     />
                   ))}
                   <Legend
                     verticalAlign="top"
-                    wrapperStyle={{ paddingBottom: 10 }}
+                    layout={isMobile ? "vertical" : "horizontal"}
+                    align={isMobile ? "right" : "center"}
+                    iconSize={8}
+                    wrapperStyle={{ paddingBottom: 10, fontSize: '11px' }}
                   />
                 </ScatterChart>
               </ChartContainer>
@@ -436,13 +451,13 @@ export function RFMDashboard() {
           </Card>
 
           {/* Segment RFM Profile - Grouped Bar */}
-          <Card className="border-gray-800 bg-gray-900">
+          <Card className="border-gray-800 bg-gray-900 overflow-hidden">
             <CardHeader>
               <CardTitle className="text-white">Segment RFM Profile</CardTitle>
             </CardHeader>
             <CardContent>
-              <ChartContainer config={rfmProfileConfig} className="h-[350px]">
-                <BarChart data={rfmProfileData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+              <ChartContainer config={rfmProfileConfig} className="h-[350px] aspect-auto">
+                <BarChart data={rfmProfileData} margin={{ top: 20, right: isMobile ? 5 : 20, bottom: 20, left: isMobile ? 0 : 20 }}>
                   <XAxis dataKey="dimension" stroke="#6b7280" />
                   <YAxis domain={[0, 100]} stroke="#6b7280" tickFormatter={(v) => `${v}`} />
                   <ChartTooltip
@@ -452,7 +467,13 @@ export function RFMDashboard() {
                       />
                     }
                   />
-                  <Legend verticalAlign="top" wrapperStyle={{ paddingBottom: 10 }} />
+                  <Legend
+                    verticalAlign="top"
+                    layout={isMobile ? "vertical" : "horizontal"}
+                    align={isMobile ? "right" : "center"}
+                    iconSize={8}
+                    wrapperStyle={{ paddingBottom: 10, fontSize: '11px' }}
+                  />
                   <Bar dataKey="Champions" fill="#10b981" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="Lapsing" fill="#f59e0b" radius={[4, 4, 0, 0]} />
                   <Bar dataKey="At-Risk" fill="#3b82f6" radius={[4, 4, 0, 0]} />
